@@ -1,6 +1,6 @@
 {
   "name": "@antmjs/vantui",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "main": "lib/index.js",
   "module": "es/index.esm.js",
   "style": "lib/index.css",
@@ -43,22 +43,30 @@
     "iconfont": "npx antm-icon --font-family antmuifont --input-path https://at.alicdn.com/t/font_2744513_7eeet2akdo.css --output-path src/style/components/iconfont.less",
     "watch": "npx antm-vantui-cli watch",
     "build": "npx antm-vantui-cli build",
+    "test": "",
     "test:watch": "",
-    "test": ""
+    "docs:watch": "node ./scripts/md.js && npx antm-doc-start",
+    "docs:release": "node ./scripts/md.js && sh ./build.sh && npx gh-pages -d doc_build -e ./main"
   },
   "dependencies": {
+    "@antmjs/types": "^2.3.6",
+    "@swc/helpers": "^0.5.0",
     "@vant/icons": "^1.7.1",
+    "ast-to-markdown": "^1.0.0",
     "classnames": "^2.3.1",
     "dayjs": "^1.10.6",
+    "glob": "^10.1.0",
+    "markdown-to-ast": "^6.0.3",
+    "prettier": "^2.8.7",
     "raf": "^3.4.1",
     "rc-util": "^5.14.0",
     "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
-    "@antmjs/iconfont": "^2.2.0",
-    "@antmjs/vantui-cli": "2.4.0",
-    "@tarojs/components": "^3.5.7",
-    "@tarojs/taro": "^3.5.7",
+    "@antmjs/iconfont": "^2.3.3",
+    "@antmjs/vantui-cli": "3.0.0",
+    "@tarojs/components": "3.5.7",
+    "@tarojs/taro": "3.5.7",
     "@types/lodash.flow": "^3.5.6"
   }
 }

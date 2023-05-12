@@ -7,6 +7,7 @@ import VanIcon from '../icon/index'
 import VanLoading from '../loading/index'
 import { isObj } from '../common/validator'
 import { on, off, trigger } from './events'
+import { createOnlyToast } from './create-only-toast'
 import toast from './toast'
 
 const defaultId = 'van-toast'
@@ -95,6 +96,7 @@ export function Toast(props: ToastProps) {
 
   const tClearListener = useCallback((toastOptions) => {
     clear(toastOptions)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const tSetDftOptsListener = useCallback((options: any) => {
@@ -186,4 +188,6 @@ Toast.fail = toast.fail
 Toast.clear = toast.clear
 Toast.setDefaultOptions = toast.setDefaultOptions
 Toast.resetDefaultOptions = toast.resetDefaultOptions
+Toast.createOnlyToast = () => createOnlyToast(Toast)
+
 export default Toast

@@ -23,6 +23,7 @@ export function FormItem(props: FormItemProps) {
     layout = 'horizontal',
     children,
     label,
+    labelName,
     required = false,
     rules = {},
     trigger = 'onChange',
@@ -38,11 +39,23 @@ export function FormItem(props: FormItemProps) {
     mutiLevel,
     valueFormat,
     messageClassName = '',
+    borderBottom = false,
   } = props
   const formInstance = useContext<IFormInstanceAPI>(FormContext)
   const { registerValidateFields, dispatch, unRegisterValidate } = formInstance
   const [, forceUpdate_] = useState({})
   const _name = Array.isArray(name) ? name.join('.') : name
+
+  const _label = useMemo(() => {
+    let l = ''
+    if (typeof label === 'string') {
+      l = label
+    } else if (labelName) {
+      l = labelName
+    }
+
+    return l
+  }, [label, labelName])
 
   const onStoreChange = useMemo(() => {
     const onStoreChange = {
@@ -59,18 +72,18 @@ export function FormItem(props: FormItemProps) {
       registerValidateFields(_name, onStoreChange, {
         rules,
         required,
-        label,
         mutiLevel,
+        label: _label,
       })
   }, [
     _name,
-    label,
     mutiLevel,
     onStoreChange,
     registerValidateFields,
     required,
     rules,
     unRegisterValidate,
+    _label,
   ])
 
   useEffect(function () {
@@ -82,31 +95,63 @@ export function FormItem(props: FormItemProps) {
 
   const innnerValue = dispatch({ type: 'getFieldValue' }, _name)
 
+  const nextHandle = useCallback(
+    (value, e, trigger_) => {
+      dispatch({ type: 'setFieldsValue' }, _name, value)
+      if (trigger_) trigger_(e)
+    },
+    [_name, dispatch],
+  )
+
+  const defaultValueFormat = useCallback((e, _name, _formInstance) => {
+    return e.detail
+  }, [])
+
   const getControlled = useCallback(
     (child: any) => {
       const props = { ...child.props }
       if (!_name) return props
       const trigger_ = props[trigger]
 
-      const handleChange = async (e: any) => {
-        let value = null
+      const isWeappInput =
+        isValidElement(children) &&
+        children?.type === 'input' &&
+        process.env.TARO_ENV === 'weapp'
 
-        if (valueFormat) {
-          value = await valueFormat(e, _name, formInstance)
+      const valueFormat_ = valueFormat || defaultValueFormat
+
+      const handleChange = (e: any, isValidateField?: boolean) => {
+        const result = valueFormat_(e, _name, formInstance)
+        // 兼容注入的Promise
+        if (result?.then && result?.catch) {
+          if (isWeappInput) {
+            console.warn(
+              `微信端Input组件请尽量不要异步函数处理，由于FormItem代理的Input会基于微信端做性能优化，
+              请查阅https://developers.weixin.qq.com/miniprogram/dev/component/input.html`,
+            )
+          }
+          result.then((v) => {
+            nextHandle(v, e, trigger_)
+            isValidateField && dispatch({ type: 'validateFieldValue' }, _name)
+          })
         } else {
-          value = e.detail
+          nextHandle(result, e, trigger_)
+          isValidateField && dispatch({ type: 'validateFieldValue' }, _name)
+          if (isWeappInput) {
+            // 微信端Input输入存在性能问题，微信2.1版本后基于bindInput返回值做优化
+            return result
+          }
         }
-        dispatch({ type: 'setFieldsValue' }, _name, value)
-        if (trigger_) trigger_(e)
       }
       props[trigger] = handleChange
       if (required || rules) {
-        props[validateTrigger] = async (e: any) => {
+        // 这里不可以使用异步，否则会导致微信小程序输入框显示异常，详见：https://github.com/AntmJS/vantui/issues/459
+        props[validateTrigger] = (e: any) => {
           if (validateTrigger === trigger) {
-            await handleChange(e)
+            handleChange(e, true)
+          } else {
+            dispatch({ type: 'validateFieldValue' }, _name)
           }
-
-          dispatch({ type: 'validateFieldValue' }, _name)
         }
       }
       props[valueKey] = innnerValue
@@ -130,7 +175,9 @@ export function FormItem(props: FormItemProps) {
     <View className={`${prefixCls}-wrapper`}>
       <View
         id={id}
-        className={`${prefixCls} ${prefixCls}-${layout} ${className}`}
+        className={`${prefixCls} ${prefixCls}-${layout} ${className} ${
+          borderBottom ? `vant-form-formItem-bottom` : ''
+        }`}
       >
         <Label
           label={label}

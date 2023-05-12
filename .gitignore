@@ -10,6 +10,7 @@
 
 antm.config.js
 pullRequest.js
+pullRequestV2.js
 package-lock.json
 
 node_modules
@@ -18,11 +19,7 @@ packages/**/dist
 packages/vantui/lib
 packages/vantui/es
 
-packages/vantui-doc/lib
-packages/vantui-doc/es
-packages/vantui-doc/dist
-packages/vantui-doc/site
-
+packages/vantui-demo/.swc
 packages/vantui-demo/weapp
 packages/vantui-demo/alipay
 packages/vantui-demo/swan
@@ -48,3 +45,6 @@ packages/vantui-demo/src/config.json
 packages/vantui-cli/lib
 packages/vantui-cli/dist
 packages/vantui-cli/dest
+
+doc_build
+.webhooks.js

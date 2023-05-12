@@ -59,20 +59,29 @@ export interface FormItemProps extends ViewProps {
    */
   label: ReactNode
   /**
+   * @description 表单label字符串, 当label不为字符串的时候，传入labelName
+   */
+  labelName?: string
+  /**
    * @description 垂直 ｜ 水平
    * @default horizontal
    */
   layout?: 'vertical' | 'horizontal'
   /**
    * @description 是否必填
-   * @default false
+   * @default `false`
    */
   required?: boolean
   /**
    * @description 验证表单触发方法名
-   * @default onChange
+   * @default `onChange`
    */
   validateTrigger?: string
+  /**
+   * @description 下边框
+   * @default   `false`
+   */
+  borderBottom?: boolean
   /**
    * @description label的外层className
    */
@@ -99,7 +108,7 @@ export interface FormItemProps extends ViewProps {
   requiredIcon?: ReactNode
   /**
    * @description 验证后反馈的信息，可设置为校验成功、失败、都展示或隐藏
-   * @default failed
+   * @default `failed`
    */
   feedback?: 'success' | 'failed' | 'all' | 'hidden'
   /**
@@ -108,17 +117,17 @@ export interface FormItemProps extends ViewProps {
   renderRight?: ReactNode
   /**
    * @description 表单交互触发方法
-   * @default onChange
+   * @default `onChange`
    */
   trigger?: string
   /**
    * @description 表单控制展示的具体值的字段名
-   * @default value
+   * @default `value`
    */
   valueKey?: string
   /**
    * @description 根据表单交互回掉函数（时间）参数的重新定义
-   * @default value
+   * @default `value`
    */
   valueFormat?: (
     value: any,

@@ -4,6 +4,9 @@ const pkg = require('../package.json')
 const miniChain = require('./webpack/miniChain')
 const h5Chain = require('./webpack/h5Chain')
 
+process.env.TARO_ENV = process.env.TARO_ENV ?? 'weapp'
+process.env.NODE_ENV = process.env.NODE_ENV ?? 'production'
+
 function getVersion() {
   function fillZero(value) {
     return value < 10 ? `0${value}` : `${value}`
@@ -35,31 +38,14 @@ const config = {
     DEPLOY_VERSION: JSON.stringify(version),
   },
   alias: {
-    '@babel/runtime-corejs3/regenerator': npath.resolve(
-      process.cwd(),
-      '../../node_modules/regenerator-runtime',
-    ),
-    '@babel/runtime/regenerator': npath.resolve(
-      process.cwd(),
-      '../../node_modules/regenerator-runtime',
-    ),
     '@': npath.resolve(process.cwd(), 'src'),
   },
-  defineConstants: {
-    // 解决Recoil报错问题
-    Window: 'function () {}',
-  },
+  defineConstants: {},
   copy: {
     patterns: [],
     options: {},
   },
-  compiler: {
-    type: 'webpack5',
-    prebundle: {
-      // 暂时不要开启，开启会报错
-      enable: false,
-    },
-  },
+  compiler: 'webpack5',
   framework: 'react',
   cache: {
     enable: false, // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
@@ -147,7 +133,7 @@ const config = {
     devServer: {
       port: 10086,
       hot: false,
-      host: 'localhost',
+      host: '0.0.0.0',
       historyApiFallback: true,
       headers: {
         'Access-Control-Allow-Origin': '*', // 表示允许跨域
@@ -160,7 +146,9 @@ const config = {
       },
       pxtransform: {
         enable: true,
-        config: {},
+        config: {
+          onePxTransform: false,
+        },
       },
       cssModules: {
         enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
@@ -177,9 +165,16 @@ const config = {
     },
   },
   plugins: [
+    ['@tarojs/plugin-framework-react', { reactMode: 'concurrent' }],
     [npath.join(process.cwd(), 'config/webpack/configPlugin')],
     '@tarojs/plugin-platform-alipay-dd',
     ['@tarojs/plugin-platform-kwai'],
+    [
+      npath.join(process.cwd(), 'config/webpack/sync-mdcode-plugin'),
+      {
+        watch: process.env.NODE_ENV === 'development',
+      },
+    ],
   ],
 }
 

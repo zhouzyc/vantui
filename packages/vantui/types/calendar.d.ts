@@ -125,6 +125,10 @@ export interface CalendarProps extends ViewProps {
    * @default 0
    */
   firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6
+  /**
+   * @description 弹出层zIndex
+   */
+  zIndex?: number
   onOpen?: () => void
   onClose?: () => void
   onOpened?: () => void
@@ -142,6 +146,11 @@ export interface CalendarProps extends ViewProps {
    * @description 自定义底部区域内容
    */
   renderFooter?: React.ReactNode
+  /**
+   * @description 是否支持年月大跨度的快速切换
+   * @default `true`
+   */
+  longspan?: boolean
 }
 /**
  * @title formatter回调参数Day

@@ -30,11 +30,13 @@ export default class Index extends Component {
           <View>已支持React应用</View>
         </View>
         {(list || []).map((group, index) => {
-          return (
-            <View key={index}>
-              <DemoHomeNav group={group}></DemoHomeNav>
-            </View>
-          )
+          if (!['开发指南', '有赞Vant-Weapp小程序文档'].includes(group.name)) {
+            return (
+              <View key={index}>
+                <DemoHomeNav group={group}></DemoHomeNav>
+              </View>
+            )
+          } else return ''
         })}
       </View>
     )
